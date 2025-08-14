@@ -1,0 +1,112 @@
+# GCP project and region configuration
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+
+# Cluster configuration
+cluster_name = "my-gke-cluster"
+location     = "us-central1"  # Can be a region or zone
+
+# Network configuration (optional, defaults to "default")
+# network    = "my-vpc-network"
+# subnetwork = "my-subnet"
+
+# For VPC-native clusters, specify secondary ranges
+# cluster_secondary_range_name  = "pods-range"
+# services_secondary_range_name = "services-range"
+
+# Private cluster configuration
+enable_private_nodes    = true
+enable_private_endpoint = false
+master_ipv4_cidr_block  = "172.16.0.0/28"
+
+# Master authorized networks (allow these CIDRs to access the cluster master)
+master_authorized_networks = [
+  {
+    cidr_block   = "10.0.0.0/8"
+    display_name = "Internal network"
+  },
+  {
+    cidr_block   = "0.0.0.0/0"  # Be careful with this - allows all IPs
+    display_name = "All networks"
+  }
+]
+
+# Security and feature configuration
+enable_workload_identity   = true
+network_policy_enabled     = true
+horizontal_pod_autoscaling = true
+http_load_balancing       = true
+
+# Maintenance configuration
+maintenance_start_time = "03:00"  # 3:00 AM
+release_channel       = "STABLE"
+
+# Resource labels
+resource_labels = {
+  environment = "development"
+  team        = "platform"
+  managed_by  = "terraform"
+  project     = "gke-example"
+}
+
+# Node pools configuration
+node_pools = {
+  # Default node pool for general workloads
+  "default-pool" = {
+    machine_type = "e2-medium"
+    disk_size_gb = 100
+    disk_type    = "pd-standard"
+    autoscaling = {
+      min_node_count = 1
+      max_node_count = 3
+    }
+    labels = {
+      pool_type = "default"
+      workload  = "general"
+    }
+  }
+  
+  # High-memory node pool for memory-intensive workloads
+  "high-memory-pool" = {
+    machine_type = "e2-highmem-2"
+    disk_size_gb = 150
+    disk_type    = "pd-ssd"
+    autoscaling = {
+      min_node_count = 0
+      max_node_count = 2
+    }
+    labels = {
+      pool_type = "high-memory"
+      workload  = "memory-intensive"
+    }
+    taints = [
+      {
+        key    = "workload-type"
+        value  = "memory-intensive"
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+  
+  # Spot instances pool for cost-effective batch workloads
+  "spot-pool" = {
+    machine_type = "e2-standard-2"
+    disk_size_gb = 100
+    spot         = true
+    autoscaling = {
+      min_node_count = 0
+      max_node_count = 5
+    }
+    labels = {
+      pool_type = "spot"
+      workload  = "batch"
+    }
+    taints = [
+      {
+        key    = "node-type"
+        value  = "spot"
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+}
