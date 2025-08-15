@@ -22,9 +22,37 @@ Creates and manages GKE node pools with features like:
 - Taints and labels
 - Security configurations
 
+### 3. service-account
+Creates and manages Google Cloud service accounts with advanced features:
+- Service account creation with custom naming
+- IAM role assignments (project and cross-project)
+- Service account key generation with rotation
+- Custom IAM role creation
+- Workload Identity integration for GKE
+- Service account impersonation
+- API enablement
+
 ## Quick Start
 
 ```hcl
+# Create service accounts
+module "service_accounts" {
+  source = "./service-account"
+  
+  project_id = "my-gcp-project"
+  
+  service_accounts = {
+    "gke-workload" = {
+      display_name = "GKE Workload Service Account"
+      roles = [
+        "roles/storage.objectViewer",
+        "roles/monitoring.metricWriter"
+      ]
+      workload_identity_users = ["default/my-app"]
+    }
+  }
+}
+
 # Create a GKE cluster
 module "gke_cluster" {
   source = "./container-cluster"
@@ -68,7 +96,18 @@ module "gke_node_pools" {
 │   ├── variables.tf           # Input variables
 │   ├── outputs.tf             # Output values
 │   └── provider.tf            # Provider requirements
-└── examples/                  # Usage examples
+├── service-account/           # Service account module
+│   ├── main.tf                # Service account resources
+│   ├── variables.tf           # Input variables
+│   ├── outputs.tf             # Output values
+│   ├── provider.tf            # Provider requirements
+│   └── examples/              # Service account examples
+│       ├── basic/             # Basic service accounts
+│       ├── with-keys/         # Service accounts with keys
+│       ├── workload-identity/ # Workload Identity setup
+│       ├── custom-roles/      # Custom IAM roles
+│       └── README.md          # Examples documentation
+└── examples/                  # Main usage examples
     ├── main.tf                # Example configuration
     ├── variables.tf           # Example variables
     ├── outputs.tf             # Example outputs
