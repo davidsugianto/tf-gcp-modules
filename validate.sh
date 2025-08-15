@@ -64,6 +64,9 @@ check_syntax "container-cluster" "GKE Cluster"
 # Check container-node-pools module  
 check_syntax "container-node-pools" "GKE Node Pools"
 
+# Check service-account module
+check_syntax "service-account" "Service Account"
+
 # Check examples
 echo "📂 Checking examples..."
 if [[ -d "examples" ]]; then
@@ -85,6 +88,7 @@ echo
 echo "📋 Summary of created modules:"
 echo "• container-cluster: Complete GKE cluster module with security and networking features"
 echo "• container-node-pools: Flexible node pools module with autoscaling and advanced configurations"
+echo "• service-account: Comprehensive service account module with IAM, Workload Identity, and key management"
 echo "• examples: Comprehensive usage examples with documentation"
 echo
 echo "🚀 Next steps:"
@@ -99,4 +103,5 @@ echo
 echo "⚡ If you have Terraform installed, you can run full validation with:"
 echo "   terraform -chdir=container-cluster validate"
 echo "   terraform -chdir=container-node-pools validate"
+echo "   terraform -chdir=service-account validate"
 echo "   terraform -chdir=examples validate"
